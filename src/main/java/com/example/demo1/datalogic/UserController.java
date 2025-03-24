@@ -3,8 +3,10 @@ package com.example.demo1.datalogic;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@ResponseBody
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -13,24 +15,27 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping
-    public String whenGet() {
-        return "GET요청을 받았음";
-    }
-
     @PostMapping
-    public String whenPost(User user) {
-        userService.createUser(user);
-        return "유저 POST 성공";
+    public User createUser(@RequestBody User user) {
+        return userService.createUser(user);
     }
 
-    @DeleteMapping
-    public String whenDelete (){
-        return "DELETE요청을 받았음";
+    // 유저 조회 (GET) - URL 변수에서 ID 받음
+    @GetMapping("/{id}")
+    public Optional<User> getUser(@PathVariable Long id) {
+        return userService.getUser(id);
     }
 
-    @PutMapping
-    public String whenPUT (){
-        return "PUT요청을 받았음";
+    // 유저 수정 (PUT) - URL 변수로 ID 받고, JSON 요청 본문에서 User 정보 받음
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        return userService.updateUser(id, updatedUser);
+    }
+
+    // 유저 삭제 (DELETE) - URL 변수로 ID 받음
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return "User deleted successfully";
     }
 }
