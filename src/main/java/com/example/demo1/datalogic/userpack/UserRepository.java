@@ -1,4 +1,4 @@
-package com.example.demo1.datalogic;
+package com.example.demo1.datalogic.userpack;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
