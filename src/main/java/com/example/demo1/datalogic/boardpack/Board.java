@@ -2,7 +2,7 @@ package com.example.demo1.datalogic.boardpack;
 
 import com.example.demo1.datalogic.userpack.User;
 import jakarta.persistence.*;
-        import lombok.Getter;
+import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

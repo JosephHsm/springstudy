@@ -22,6 +22,9 @@ public class User {
     private String username;       // 예: "hong2025"
     private String email;          // 예: "newhong@example.com"
 
+    @Column(nullable = false)
+    private String password;    // <-- 추가
+
     @CreationTimestamp             // INSERT 시점 자동 기록
     private LocalDateTime createdAt;
 

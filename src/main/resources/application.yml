@@ -1,7 +1,7 @@
 spring:
   datasource:
-    #url: jdbc:mysql://localhost:3305/mydb  # 노트북용 주소
-    url: jdbc:mysql://localhost:3306/mydb
+    url: jdbc:mysql://localhost:3305/mydb  # 노트북용 주소
+    #url: jdbc:mysql://localhost:3306/mydb
     username: root                         # DB ????
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -9,3 +9,6 @@ spring:
     hibernate:
       ddl-auto: update  # (create, update, validate, none ? ??)
     show-sql: true      # ???? SQL? ??
+  jwt:
+    secret: verySecretKeyThatShouldBeLongAndSecure123!
+    expiration-ms: 3600000  # 1시간
