@@ -2,6 +2,8 @@ package com.example.demo1.datalogic.boardpack;
 
 import com.example.demo1.datalogic.userpack.User;
 import com.example.demo1.datalogic.userpack.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,45 +23,44 @@ public class BoardService {
     }
 
     /** 게시글 생성 */
-    public BoardResponse createBoard(BoardRequest boardRequest) {
-        // 1) User(authorId)가 존재하는지 확인
-        User author = userRepository.findById(boardRequest.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("User not found: " + boardRequest.getAuthorId()));
+    public BoardResponse createBoard(BoardRequest req) {
+        // 1) SecurityContext에서 email 꺼내기
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        User author = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
 
-        // 2) Board 엔티티 생성 & 설정
-        Board board = new Board();
-        board.setTitle(boardRequest.getTitle());
-        board.setContent(boardRequest.getContent());
-        board.setAuthor(author);   // 작성자 연결
+        // 2) 엔티티 생성/저장 (나머지 동일)
+        Board b = new Board();
+        b.setTitle(req.getTitle());
+        b.setContent(req.getContent());
+        b.setAuthor(author);
+        Board saved = boardRepository.save(b);
 
-        // 3) 저장
-        Board saved = boardRepository.save(board);
-
-        // 4) Board -> BoardResponse 변환
         return BoardResponse.builder()
                 .id(saved.getId())
                 .title(saved.getTitle())
                 .content(saved.getContent())
-                .authorId(author.getId())
+                .authorUsername(author.getUsername())
                 .createdAt(saved.getCreatedAt())
-                // created 시점이므로 updatedAt은 null 또는 아직 값 미할당
+                .updatedAt(saved.getUpdatedAt())
                 .build();
     }
 
     /** 게시글 목록 조회 */
     @Transactional(readOnly = true)
     public List<BoardResponse> getAllBoards() {
-        return boardRepository.findAll()
-                .stream()
+        return boardRepository.findAll().stream()
                 .map(board -> BoardResponse.builder()
                         .id(board.getId())
                         .title(board.getTitle())
                         .content(board.getContent())
-                        .authorId(board.getAuthor().getId())
+                        .authorUsername(board.getAuthor().getUsername())
                         .createdAt(board.getCreatedAt())
                         .updatedAt(board.getUpdatedAt())
                         .build()
-                ).toList();
+                )
+                .toList();
     }
 
     /** 게시글 상세 조회 */
@@ -72,7 +73,7 @@ public class BoardService {
                 .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .authorId(board.getAuthor().getId())
+                .authorUsername(board.getAuthor().getUsername())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
@@ -83,22 +84,17 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("Board not found: " + boardId));
 
-        // title, content 갱신
         board.setTitle(boardRequest.getTitle());
         board.setContent(boardRequest.getContent());
-
-        // authorId도 수정 가능하게 할지 여부는 정책에 따라 결정
-        // 만약 작성자를 변경하려면, 추가로 userRepository에서 찾아서 설정
-
         Board updated = boardRepository.save(board);
 
         return BoardResponse.builder()
                 .id(updated.getId())
                 .title(updated.getTitle())
                 .content(updated.getContent())
-                .authorId(updated.getAuthor().getId())
+                .authorUsername(updated.getAuthor().getUsername())
                 .createdAt(updated.getCreatedAt())
-                .updatedAt(updated.getUpdatedAt()) // 수정 시각 자동 반영
+                .updatedAt(updated.getUpdatedAt())
                 .build();
     }
 

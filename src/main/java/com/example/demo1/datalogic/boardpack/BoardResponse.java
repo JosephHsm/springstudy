@@ -13,7 +13,7 @@ public class BoardResponse {
     private Long id;
     private String title;
     private String content;
-    private Long authorId;            // 작성자 ID
+    private String authorUsername;          // 작성자 ID
     private LocalDateTime createdAt;  // 생성 시각
     private LocalDateTime updatedAt;  // 수정 시각(수정 시만 표시 가능)
 }

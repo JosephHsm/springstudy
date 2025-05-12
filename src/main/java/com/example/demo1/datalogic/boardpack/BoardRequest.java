@@ -1,13 +1,14 @@
 package com.example.demo1.datalogic.boardpack;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class BoardRequest {
-    private String title;     // 게시글 제목
-    private String content;   // 게시글 내용
-    private Long authorId;    // 작성자 ID (게시글 생성 시 필요)
-
+        @NotBlank(message = "제목은 필수입니다")
+        private String title;
+        @NotBlank(message = "내용은 필수입니다")
+        private String content;
 }

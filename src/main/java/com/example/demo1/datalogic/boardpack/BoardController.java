@@ -1,5 +1,6 @@
 package com.example.demo1.datalogic.boardpack;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,11 @@ public class BoardController {
 
     /** 게시글 생성 (POST) */
     @PostMapping
-    public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardRequest boardRequest) {
+    public ResponseEntity<BoardResponse> createBoard(@RequestBody @Valid BoardRequest boardRequest) {
         BoardResponse response = boardService.createBoard(boardRequest);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
     /** 게시글 목록 조회 (GET) */
